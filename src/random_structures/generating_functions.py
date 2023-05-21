@@ -266,7 +266,7 @@ def generate_fixed(value):
 
 def generate_string_enum(sg: Structure_Generator, value: Value):
     pattern = value.specification.get("pattern", "%d")
-    enum_id = value.scope.get_value(pattern) if value.scope else 1
+    enum_id = value.scope.get_value(pattern) if value.scope else 0
     value.value = pattern % enum_id
     value.state = State.DONE
 
@@ -321,6 +321,7 @@ def generate_record(sg: Structure_Generator, value: Value):
 
 
 def generate_array(sg: Structure_Generator, value: Value):
+    scope = Scope()
     match value.state:
         case State.DELAYED:
             min_length = value.specification.get("min_length", 0)
@@ -328,7 +329,8 @@ def generate_array(sg: Structure_Generator, value: Value):
             length = random.randint(min_length, max_length)
             type_elements = value.specification.get("type_elements", {})
             value.value = [
-                new_value(type_elements, value) for _ in range(length)
+                new_value(type_elements, value, scope=scope)
+                for _ in range(length)
             ]
             value.sons = value.value
             value.state = State.TO_BUILD
