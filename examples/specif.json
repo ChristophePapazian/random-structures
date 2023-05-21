@@ -1,0 +1,96 @@
+{
+    "type": "record",
+    "keys": [
+        {
+            "name": "int_key",
+            "chance": 100,
+            "type": {
+                "type": "number"
+            }
+        },
+        {
+            "name": "str_key",
+            "chance": 100,
+            "type": {
+                "type": "string"
+            }
+        },
+        {
+            "name": "null_key",
+            "chance": 50,
+            "type": {
+                "type": "null"
+            }
+        },
+        {
+            "name": "array_key",
+            "chance": 100,
+            "type": {
+                "type": "array",
+                "min_length": 0,
+                "max_length": 10,
+                "type_elements": {
+                    "type": "choice",
+                    "options": [
+                        {
+                            "type": {
+                                "type": "string"
+                            },
+                            "chance": 80
+                        },
+                        {
+                            "type": {
+                                "type": "number"
+                            },
+                            "chance": 20
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "random_record_key",
+            "chance": 100,
+            "type": {
+                "type": "record",
+                "keys": [
+                    {
+                        "name": 0,
+                        "chance": 50,
+                        "repeat": 10,
+                        "type": {
+                            "type": "number"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "recursive_tree",
+            "chance": 100,
+            "type": {
+                "type": "array",
+                "store_ref": "rec_tree",
+                "min_length": 2,
+                "max_length": 5,
+                "type_elements": {
+                    "type": "choice",
+                    "options": [
+                        {
+                            "type": {
+                                "load_ref": "rec_tree"
+                            },
+                            "chance": 20
+                        },
+                        {
+                            "type": {
+                                "type": "number"
+                            },
+                            "chance": 80
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

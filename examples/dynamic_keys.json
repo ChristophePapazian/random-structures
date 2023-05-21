@@ -1,0 +1,101 @@
+{
+    "type": "record",
+    "keys": [
+        {
+            "name": "age",
+            "type": {
+                "type": "number",
+                "method" : "uniform",
+                "parameters" : [5, 105]
+            }
+        },
+        {
+            "name": "last_name",
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "last_name"
+                ]
+            }
+        },
+        {
+            "name": "first_name",
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "first_name"
+                ]
+            }
+        },
+        {
+            "name": "active_customer",
+            "type": {
+                "type": "bool"
+            }
+        },
+        {
+            "name": {
+                "type": "string",
+                "method": "fake",
+                "parameters": ["credit_card_number"]
+            },
+            "chance": 50,
+            "repeat": 4,
+            "type": {
+                "type": "choice",
+                "options": [
+                    {
+                        "type": {
+                            "type": "string"
+                        },
+                        "chance": 20
+                    },
+                    {
+                        "type": {
+                            "type": "number"
+                        },
+                        "chance": 20
+                    },
+                    {
+                        "type": {
+                            "type": "bool"
+                        },
+                        "chance": 20
+                    },
+                    {
+                        "type": {
+                            "type": "array",
+                            "min_length": 0,
+                            "max_length": 8,
+                            "type_elements": {
+                                "type": "number"
+                            }
+                        },
+                        "chance": 20
+                    },
+                    {
+                        "type": {
+                            "type": "record",
+                            "keys": [
+                                {
+                                    "name": {
+                                        "type": "string",
+                                        "method": "fake",
+                                        "parameters": ["ipv4_public"]
+                                    },
+                                    "repeat": 2,
+                                    "type": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
+                        },
+                        "chance": 20
+                    }
+                ]
+            }
+        }
+    ]
+}

@@ -1,0 +1,66 @@
+{
+    "type": "record",
+    "store_ref": "payload",
+    "keys": [
+        {
+            "name": "name",
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "name"
+                ]
+            }
+        },
+
+        {
+            "name": "computer",
+            "chance": 50,
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "ipv4_public"
+                ]
+            }
+        },
+        {
+            "name": "network",
+            "chance": "computer",
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "postcode"
+                ]
+            }
+        },
+        {
+            "name": {
+                "type": "string",
+                "parameters": 1
+            },
+            "chance": 10,
+            "repeat": 20,
+            "type": {
+                "type": "choice",
+                "options": [
+                    {
+                        "type": {
+                            "type": "string",
+                            "method": "fake",
+                            "parameters": ["ssn"]
+                        },
+                        "chance": 50
+                    },
+                    {
+                        "type": {
+                            "load_ref": "payload"
+                        },
+                        "chance": 50
+                    }
+                ]
+            }
+        }
+    ]
+}

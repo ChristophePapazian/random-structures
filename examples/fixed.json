@@ -1,0 +1,50 @@
+{
+    "type": "record",
+    "keys": [
+        {
+            "name": "age",
+            "type": {
+                "type": "number",
+                "method" : "uniform",
+                "parameters" : [5, 105]
+            }
+        },
+        {
+            "name": "last_name",
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "last_name"
+                ]
+            }
+        },
+        {
+            "name": "first_name",
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "first_name"
+                ]
+            }
+        },
+        {
+            "name": "active_customer",
+            "type": {
+                "type": "bool"
+            }
+        },
+        {
+            "name": "scores",
+            "type": {
+                "type": "array",
+                "min_length": 3,
+                "max_length": 3,
+                "type_elements": {
+                    "type": "number"
+                }
+            }
+        }
+    ]
+}

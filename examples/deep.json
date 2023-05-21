@@ -1,0 +1,11 @@
+{
+    "type": "record",
+    "store_ref": "deep_record",
+    "max_depth": 2048,
+    "keys": [
+        {
+            "name": "a",
+            "type": {"load_ref":"deep_record"}
+        }
+    ]
+}
