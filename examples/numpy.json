@@ -1,0 +1,5 @@
+{
+    "type": "number",
+    "method": "numpy",
+    "parameters": ["binomial", 10, 0.5]
+}

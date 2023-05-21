@@ -2,4 +2,6 @@
 Random structures by Christophe Papazian
 """
 
-__all__ = ["generation_functions"]
+from . import generating_functions
+
+Structure_Generator = generating_functions.Structure_Generator

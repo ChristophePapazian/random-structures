@@ -39,26 +39,43 @@ class State(enum.Enum):
     TRUNCATED = 3
 
 
+class Scope:
+    def __init__(self):
+        self.enums = collections.Counter()
+
+    def get_value(self, pattern):
+        res = self.enums[pattern]
+        self.enums[pattern] += 1
+        return res
+
+
 class Value(pydantic.BaseModel):
     """value on the generating stack"""
 
-    specification: specification
+    specification: dict = pydantic.Field(default_factory=dict)
     state: State = State.DELAYED
     value: Any = None
     sons: list["Value"] | None = None
     depth: int
+    scope: Any = None
 
 
 def done(value, parent: Value):
     """crate a Value already computed"""
     return Value(
-        value=value, state=State.DONE, specification={}, depth=parent.depth + 1
+        value=value,
+        state=State.DONE,
+        depth=parent.depth + 1,
     )
 
 
-def new_value(specification: specification, parent: Value):
+def new_value(specification: specification, parent: Value, scope=None):
     """create a Value not yet computed"""
-    return Value(specification=specification, depth=parent.depth + 1)
+    return Value(
+        specification=specification,
+        depth=parent.depth + 1,
+        scope=scope,
+    )
 
 
 class Structure_Generator:
@@ -118,42 +135,22 @@ class Structure_Generator:
             specif = json.load(file_in)
             return cls(specif, faker=faker)
 
-    @staticmethod
-    def rand_int(method: str, parameters) -> int:
-        import math
-
-        match method:
-            case "choice":
-                if not isinstance(parameters, list) or not all(
-                    isinstance(v, int) for v in parameters
-                ):
-                    parameters = [0]
-                return random.choice(parameters)
-            case "geometric":
-                if not isinstance(parameters, float):
-                    parameters = 0.5
-                return math.ceil(
-                    math.log(random.random()) / math.log(parameters)
-                )
-            case _:  # default "uniform"
-                if parameters is None:
-                    parameters = [0, 9]
-                return random.randint(*parameters)
-
     GLOBALS = {}
 
     def parse_specif(self, specif):
+        if specif is None:
+            return
         if specif.get("store_ref"):
             self.GLOBALS[specif["store_ref"]] = specif
         match specif.get("type"):
             case "array":
-                self.parse_specif(specif["type_elements"])
+                self.parse_specif(specif.get("type_elements"))
             case "record":
                 for key in specif["keys"]:
-                    self.parse_specif(key["type"])
+                    self.parse_specif(key.get("type"))
             case "choice":
                 for option in specif["options"]:
-                    self.parse_specif(option["type"])
+                    self.parse_specif(option.get("type"))
             case _:
                 pass
 
@@ -221,7 +218,23 @@ def generate_integer_uniform(min_val: int = 0, max_val: int = 9):
 
 
 @register_simple_function
-def generate_integer_choice(choices: tuple[int, ...] = (0, 1)):
+def generate_integer_choice(*choices):
+    return random.choice(choices)
+
+
+@register_simple_function
+def generate_number_numpy(distribution: str, *choices):
+    try:
+        import numpy.random
+
+        f = getattr(numpy.random, distribution)
+        if f:
+            return f(*choices)
+        else:
+            logger.error(f"unknown numpy distribution: {distribution}")
+    except BaseException as e:
+        logger.error(exc_info=e)
+
     return random.choice(choices)
 
 
@@ -251,13 +264,21 @@ def generate_fixed(value):
     return value
 
 
+def generate_string_enum(sg: Structure_Generator, value: Value):
+    pattern = value.specification.get("pattern", "%d")
+    enum_id = value.scope.get_value(pattern) if value.scope else 1
+    value.value = pattern % enum_id
+    value.state = State.DONE
+
+
 def generate_record(sg: Structure_Generator, value: Value):
+    scope = Scope()
     match value.state:
         case State.DELAYED:
             keys_there = set()
             value.value = []
             to_be_done = []
-            for key in value.specification["keys"]:
+            for key in value.specification.get("keys", ()):
                 repeats = key.get("repeat", 1)
                 for _ in range(repeats):
                     match key.get("chance", 100):
@@ -275,9 +296,13 @@ def generate_record(sg: Structure_Generator, value: Value):
                         if isinstance(key.get("name"), str):
                             name = done(key["name"], value)
                         else:
-                            name = new_value(key.get("name"), value)
+                            name = new_value(
+                                key.get("name", {}), value, scope=scope
+                            )
                             to_be_done.append(name)
-                        n_value = new_value(key["type"], value)
+                        n_value = new_value(
+                            key.get("type", {}), value, scope=scope
+                        )
                         to_be_done.append(n_value)
                         value.value.append((name, n_value))
             if to_be_done:
@@ -301,7 +326,7 @@ def generate_array(sg: Structure_Generator, value: Value):
             min_length = value.specification.get("min_length", 0)
             max_length = value.specification.get("max_length", min_length + 4)
             length = random.randint(min_length, max_length)
-            type_elements = value.specification.get("type_elements")
+            type_elements = value.specification.get("type_elements", {})
             value.value = [
                 new_value(type_elements, value) for _ in range(length)
             ]
@@ -328,9 +353,11 @@ def register_base_functions(callbacks):
     callbacks[("integer", "uniform")] = generate_integer_uniform
     callbacks[("integer", None)] = generate_integer_uniform
     callbacks[("integer", "choice")] = generate_integer_choice
+    callbacks[("integer", "numpy")] = generate_number_numpy
     callbacks[("bool", None)] = generate_boolean
     callbacks[("fixed", None)] = generate_fixed
     callbacks[("choice", None)] = generate_choice
     callbacks[("string", None)] = generate_string
+    callbacks[("string", "enum")] = generate_string_enum
     callbacks[("record", None)] = generate_record
     callbacks[("array", None)] = generate_array

@@ -1,0 +1,3 @@
+.hypothesis
+*.pyc
+**/__pycache__
