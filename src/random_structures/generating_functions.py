@@ -145,10 +145,10 @@ class Structure_Generator:
                 self.parse_specif(specif.get("type_elements"))
             case "record":
                 for key in specif["keys"]:
-                    self.parse_specif(key.get("type"))
+                    self.parse_specif(key.get("value"))
             case "choice":
                 for option in specif["options"]:
-                    self.parse_specif(option.get("type"))
+                    self.parse_specif(option.get("value"))
             case _:
                 pass
 
@@ -159,6 +159,10 @@ class Structure_Generator:
         while stack:
             val = stack.pop()
             while (load := val.specification.get("load_ref")) is not None:
+                if load not in self.GLOBALS:
+                    logger.error(
+                        f"unknown reference {load} {list(self.GLOBALS.keys())}"
+                    )
                 val.specification = self.GLOBALS.get(load, {})
             if val.depth >= val.specification.get("max_depth", self.max_depth):
                 val.state = State.TRUNCATED
@@ -309,12 +313,12 @@ def generate_record(sg: Structure_Generator, value: Value):
                                 else key_name in keys_there
                             )
                     if presence:
-                        if isinstance(key.get("name"), str):
+                        if not isinstance(key.get("name"), dict):
                             name = done(key["name"], value)
                         else:
                             name = new_value(key.get("name", {}), value, scope=scope)
                             to_be_done.append(name)
-                        n_value = new_value(key.get("type", {}), value, scope=scope)
+                        n_value = new_value(key.get("value", {}), value, scope=scope)
                         to_be_done.append(n_value)
                         value.value.append((name, n_value))
             if to_be_done:
@@ -354,7 +358,7 @@ def generate_choice(sg: Structure_Generator, value: Value):
     r = random.random() * 100.0
     for option in value.specification["options"]:
         if r < option["chance"]:
-            value.specification = option.get("type")
+            value.specification = option.get("value")
             return
         else:
             r -= option["chance"]

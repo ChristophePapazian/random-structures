@@ -5,7 +5,7 @@
     "keys": [
         {
             "name": "a",
-            "type": {"load_ref":"deep_record"}
+            "value": {"load_ref":"deep_record"}
         }
     ]
 }

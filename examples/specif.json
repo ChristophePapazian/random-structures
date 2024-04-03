@@ -4,28 +4,28 @@
         {
             "name": "int_key",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "number"
             }
         },
         {
             "name": "str_key",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "string"
             }
         },
         {
             "name": "null_key",
             "chance": 50,
-            "type": {
+            "value": {
                 "type": "null"
             }
         },
         {
             "name": "array_key",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "array",
                 "min_length": 0,
                 "max_length": 10,
@@ -33,13 +33,13 @@
                     "type": "choice",
                     "options": [
                         {
-                            "type": {
+                            "value": {
                                 "type": "string"
                             },
                             "chance": 80
                         },
                         {
-                            "type": {
+                            "value": {
                                 "type": "number"
                             },
                             "chance": 20
@@ -51,14 +51,16 @@
         {
             "name": "random_record_key",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "record",
                 "keys": [
                     {
-                        "name": 0,
+                        "name": {
+                            "type": "string"
+                        },
                         "chance": 50,
                         "repeat": 10,
-                        "type": {
+                        "value": {
                             "type": "number"
                         }
                     }
@@ -68,7 +70,7 @@
         {
             "name": "recursive_tree",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "array",
                 "store_ref": "rec_tree",
                 "min_length": 2,
@@ -77,13 +79,13 @@
                     "type": "choice",
                     "options": [
                         {
-                            "type": {
+                            "value": {
                                 "load_ref": "rec_tree"
                             },
                             "chance": 20
                         },
                         {
-                            "type": {
+                            "value": {
                                 "type": "number"
                             },
                             "chance": 80

@@ -3,7 +3,7 @@
     "keys": [
         {
             "name": "age",
-            "type": {
+            "value": {
                 "type": "number",
                 "method" : "uniform",
                 "parameters" : [5, 105]
@@ -11,7 +11,7 @@
         },
         {
             "name": "last_name",
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -21,7 +21,7 @@
         },
         {
             "name": "first_name",
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -31,7 +31,7 @@
         },
         {
             "name": "active_customer",
-            "type": {
+            "value": {
                 "type": "bool"
             }
         },
@@ -43,29 +43,29 @@
             },
             "chance": 50,
             "repeat": 4,
-            "type": {
+            "value": {
                 "type": "choice",
                 "options": [
                     {
-                        "type": {
+                        "value": {
                             "type": "string"
                         },
                         "chance": 20
                     },
                     {
-                        "type": {
+                        "value": {
                             "type": "number"
                         },
                         "chance": 20
                     },
                     {
-                        "type": {
+                        "value": {
                             "type": "bool"
                         },
                         "chance": 20
                     },
                     {
-                        "type": {
+                        "value": {
                             "type": "array",
                             "min_length": 0,
                             "max_length": 8,
@@ -76,7 +76,7 @@
                         "chance": 20
                     },
                     {
-                        "type": {
+                        "value": {
                             "type": "record",
                             "keys": [
                                 {
@@ -86,7 +86,7 @@
                                         "parameters": ["ipv4_public"]
                                     },
                                     "repeat": 2,
-                                    "type": {
+                                    "value": {
                                         "type": "string"
                                     }
                                 }

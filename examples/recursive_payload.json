@@ -4,7 +4,7 @@
     "keys": [
         {
             "name": "name",
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -16,7 +16,7 @@
         {
             "name": "computer",
             "chance": 50,
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -27,7 +27,7 @@
         {
             "name": "network",
             "chance": "computer",
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -42,11 +42,11 @@
             },
             "chance": 10,
             "repeat": 20,
-            "type": {
+            "value": {
                 "type": "choice",
                 "options": [
                     {
-                        "type": {
+                        "value": {
                             "type": "string",
                             "method": "fake",
                             "parameters": ["ssn"]
@@ -54,7 +54,7 @@
                         "chance": 50
                     },
                     {
-                        "type": {
+                        "value": {
                             "load_ref": "payload"
                         },
                         "chance": 50

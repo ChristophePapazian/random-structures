@@ -19,7 +19,7 @@ def test_depth(depth):
         "type": "record",
         "store_ref": "ref_name",
         "max_depth": depth,
-        "keys": [{"name": "sub", "type": {"load_ref": "ref_name"}}],
+        "keys": [{"name": "sub", "value": {"load_ref": "ref_name"}}],
     }
     generator = random_structures.Structure_Generator(specif)
     res = generator.generate()
@@ -41,7 +41,7 @@ def test_girth_and_enum(girth):
                     "pattern": "key_%04d",
                 },
                 "repeat": girth,
-                "type": {"type": "null"},
+                "value": {"type": "null"},
             }
         ],
     }

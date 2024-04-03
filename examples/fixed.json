@@ -3,7 +3,7 @@
     "keys": [
         {
             "name": "age",
-            "type": {
+            "value": {
                 "type": "number",
                 "method" : "uniform",
                 "parameters" : [5, 105]
@@ -11,7 +11,7 @@
         },
         {
             "name": "last_name",
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -21,7 +21,7 @@
         },
         {
             "name": "first_name",
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -31,13 +31,13 @@
         },
         {
             "name": "active_customer",
-            "type": {
+            "value": {
                 "type": "bool"
             }
         },
         {
             "name": "scores",
-            "type": {
+            "value": {
                 "type": "array",
                 "min_length": 3,
                 "max_length": 3,

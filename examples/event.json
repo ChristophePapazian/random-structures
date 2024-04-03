@@ -4,7 +4,7 @@
     "keys": [
         {
             "name": "owner name",
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -15,7 +15,7 @@
         {
             "name": "description",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -26,7 +26,7 @@
         {
             "name": "zipcode",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "string",
                 "method": "fake",
                 "parameters": [
@@ -37,7 +37,7 @@
         {
             "name": "participants",
             "chance": 100,
-            "type": {
+            "value": {
                 "type": "array",
                 "min_length": 0,
                 "max_length": 20,
@@ -46,7 +46,7 @@
                     "keys": [
                         {
                             "name": "name",
-                            "type": {
+                            "value": {
                                 "type": "string",
                                 "method": "fake",
                                 "parameters": [
@@ -57,7 +57,7 @@
                         {
                             "name": "phone",
                             "chance": 50,
-                            "type": {
+                            "value": {
                                 "type": "string",
                                 "method": "fake",
                                 "parameters": [
@@ -67,7 +67,7 @@
                         },
                         {
                             "name": "id",
-                            "type": {
+                            "value": {
                                 "type": "number",
                                 "method": "uniform",
                                 "parameters": [
@@ -79,7 +79,7 @@
                         {
                             "name": "payments",
                             "chance": 75,
-                            "type": {
+                            "value": {
                                 "type": "array",
                                 "min_length": 1,
                                 "max_length": 5,
