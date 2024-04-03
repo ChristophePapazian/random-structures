@@ -260,9 +260,24 @@ def generate_string(
     return "".join(random.choices(alphabet, k=random.randint(min_length, max_length)))
 
 
+def asciify(s: str):
+    import re
+    import unicodedata
+
+    return re.sub(
+        r"\s", " ", unicodedata.normalize("NFD", s).encode("ascii", "ignore").decode()
+    )
+
+
 @register_simple_function
-def generate_fixed(value):
-    return value
+def generate_string_from_regex(regex: str):
+    try:
+        import rstr
+
+        return asciify(rstr.xeger(regex))
+    except Exception as e:
+        logger.error(exc_info=e)
+        return None
 
 
 def generate_string_enum(sg: Structure_Generator, value: Value):
@@ -363,6 +378,7 @@ def register_base_functions(callbacks):
     callbacks[("string", None)] = generate_string
     callbacks[("string", "enum")] = generate_string_enum
     callbacks[("string", "choice")] = generate_string_choice
+    callbacks[("string", "regex")] = generate_string_from_regex
     callbacks[("record", None)] = generate_record
     callbacks[("array", None)] = generate_array
     callbacks[("constant", None)] = generate_fixed

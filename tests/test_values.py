@@ -1,5 +1,6 @@
 import pytest
 import random_structures
+import itertools
 
 
 @pytest.mark.parametrize("anything", ["test", 1, True, 1.0, None, [], {}])
@@ -39,3 +40,32 @@ def test_string(min_length, max_length, fixed_alphabet):
         assert isinstance(res, str)
         assert min_length <= len(res) <= max_length
         assert all(c in fixed_alphabet for c in res)
+
+
+@pytest.mark.parametrize(
+    "regex, expected",
+    [
+        ("ab|cd", ["ab", "cd"]),
+        ("a*", lambda s: all(c == "a" for c in s)),
+        (
+            "(st|uv)+",
+            lambda s: len(s) % 2 == 0
+            and all(c in [("s", "t"), ("u", "v")] for c in itertools.batched(s, 2)),
+        ),
+    ],
+)
+def test_string_regex(regex, expected):
+    specif = {"type": "string", "method": "regex", "parameters": {"regex": regex}}
+    generator = random_structures.Structure_Generator(specif)
+    all_res = set()
+    for _ in range(200):
+        res = generator.generate()
+        assert isinstance(res, str)
+        all_res.add(res)
+    match expected:
+        case list():
+            assert sorted(all_res) == expected
+        case _:
+            assert all(expected(res) for res in all_res), [
+                c for c in all_res if not expected(c)
+            ]
