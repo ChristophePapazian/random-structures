@@ -1,0 +1,8 @@
+{
+	"type": "constant",
+	"value": {
+		"id": 32,
+		"name": "Paul",
+		"check": true
+	}
+}

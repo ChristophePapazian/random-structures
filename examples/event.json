@@ -1,0 +1,100 @@
+{
+    "type": "record",
+    "store_ref": "event",
+    "keys": [
+        {
+            "name": "owner name",
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "name"
+                ]
+            }
+        },
+        {
+            "name": "description",
+            "chance": 100,
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "text"
+                ]
+            }
+        },
+        {
+            "name": "zipcode",
+            "chance": 100,
+            "type": {
+                "type": "string",
+                "method": "fake",
+                "parameters": [
+                    "postcode"
+                ]
+            }
+        },
+        {
+            "name": "participants",
+            "chance": 100,
+            "type": {
+                "type": "array",
+                "min_length": 0,
+                "max_length": 20,
+                "type_elements": {
+                    "type": "record",
+                    "keys": [
+                        {
+                            "name": "name",
+                            "type": {
+                                "type": "string",
+                                "method": "fake",
+                                "parameters": [
+                                    "name"
+                                ]
+                            }
+                        },
+                        {
+                            "name": "phone",
+                            "chance": 50,
+                            "type": {
+                                "type": "string",
+                                "method": "fake",
+                                "parameters": [
+                                    "phone_number"
+                                ]
+                            }
+                        },
+                        {
+                            "name": "id",
+                            "type": {
+                                "type": "number",
+                                "method": "uniform",
+                                "parameters": [
+                                    10000000,
+                                    99999999
+                                ]
+                            }
+                        },
+                        {
+                            "name": "payments",
+                            "chance": 75,
+                            "type": {
+                                "type": "array",
+                                "min_length": 1,
+                                "max_length": 5,
+                                "type_elements": {
+                                    "type": "string",
+                                    "method": "fake",
+                                    "parameters": [
+                                        "credit_card_number"
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

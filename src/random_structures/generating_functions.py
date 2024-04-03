@@ -104,9 +104,7 @@ class Structure_Generator:
                 self.faker = Faker(faker)
                 self._set_faker_callbacks()
             except ModuleNotFoundError:
-                logger.warning(
-                    "You need to install faker to use those features"
-                )
+                logger.warning("You need to install faker to use those features")
 
     def _null_callback(self, value):
         value.state = State.DONE
@@ -254,9 +252,7 @@ def generate_string(
         alphabet = fixed_alphabet
     else:
         alphabet = _ALPHABETS.get(alphabet, _ALPHABETS["ascii_letters_"])
-    return "".join(
-        random.choices(alphabet, k=random.randint(min_length, max_length))
-    )
+    return "".join(random.choices(alphabet, k=random.randint(min_length, max_length)))
 
 
 @register_simple_function
@@ -296,13 +292,9 @@ def generate_record(sg: Structure_Generator, value: Value):
                         if isinstance(key.get("name"), str):
                             name = done(key["name"], value)
                         else:
-                            name = new_value(
-                                key.get("name", {}), value, scope=scope
-                            )
+                            name = new_value(key.get("name", {}), value, scope=scope)
                             to_be_done.append(name)
-                        n_value = new_value(
-                            key.get("type", {}), value, scope=scope
-                        )
+                        n_value = new_value(key.get("type", {}), value, scope=scope)
                         to_be_done.append(n_value)
                         value.value.append((name, n_value))
             if to_be_done:
@@ -329,8 +321,7 @@ def generate_array(sg: Structure_Generator, value: Value):
             length = random.randint(min_length, max_length)
             type_elements = value.specification.get("type_elements", {})
             value.value = [
-                new_value(type_elements, value, scope=scope)
-                for _ in range(length)
+                new_value(type_elements, value, scope=scope) for _ in range(length)
             ]
             value.sons = value.value
             value.state = State.TO_BUILD
@@ -351,6 +342,11 @@ def generate_choice(sg: Structure_Generator, value: Value):
     value.state = State.DONE
 
 
+def generate_fixed(sg: Structure_Generator, value: Value):
+    value.value = value.specification.get("value", None)
+    value.state = State.DONE
+
+
 def register_base_functions(callbacks):
     callbacks[("integer", "uniform")] = generate_integer_uniform
     callbacks[("integer", None)] = generate_integer_uniform
@@ -363,3 +359,4 @@ def register_base_functions(callbacks):
     callbacks[("string", "enum")] = generate_string_enum
     callbacks[("record", None)] = generate_record
     callbacks[("array", None)] = generate_array
+    callbacks[("constant", None)] = generate_fixed

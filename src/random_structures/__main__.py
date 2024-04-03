@@ -16,7 +16,7 @@ if __name__ == "__main__" and not sys.flags.interactive:
     except BaseException as e:
         print(
             """Usage:
-            python payloads.py specif.json [repeat=1]
+            python -m random_structures specif.json [repeat=1]
         """,
         )
         traceback.print_exception(e)
