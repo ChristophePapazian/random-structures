@@ -256,12 +256,23 @@ def generate_string(
     max_length: int = 16,
     alphabet="letters_",
     fixed_alphabet=None,
+    encoding=None,
 ) -> str:
     if isinstance(fixed_alphabet, str):
         alphabet = fixed_alphabet
     else:
         alphabet = _ALPHABETS.get(alphabet, _ALPHABETS["ascii_letters_"])
-    return "".join(random.choices(alphabet, k=random.randint(min_length, max_length)))
+    res = "".join(random.choices(alphabet, k=random.randint(min_length, max_length)))
+    match encoding:
+        case "urlencoded":
+            import urllib.parse
+
+            res = urllib.parse.quote_plus(res)
+        case "base64":
+            import base64
+
+            res = base64.b64encode(res.encode()).decode()
+    return res
 
 
 def asciify(s: str):
