@@ -192,7 +192,7 @@ class Structure_Generator:
 
 
 def register_simple_function(fun):
-    fun = pydantic.validate_arguments(fun)
+    fun = pydantic.validate_call(fun)
 
     def callback(sg: Structure_Generator, value: Value):
         arguments = value.specification.get("parameters")
@@ -217,6 +217,11 @@ def generate_integer_uniform(min_val: int = 0, max_val: int = 9):
 
 @register_simple_function
 def generate_integer_choice(*choices):
+    return random.choice(choices)
+
+
+@register_simple_function
+def generate_string_choice(*choices):
     return random.choice(choices)
 
 
@@ -357,6 +362,7 @@ def register_base_functions(callbacks):
     callbacks[("choice", None)] = generate_choice
     callbacks[("string", None)] = generate_string
     callbacks[("string", "enum")] = generate_string_enum
+    callbacks[("string", "choice")] = generate_string_choice
     callbacks[("record", None)] = generate_record
     callbacks[("array", None)] = generate_array
     callbacks[("constant", None)] = generate_fixed

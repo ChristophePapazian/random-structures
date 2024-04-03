@@ -1,9 +1,9 @@
-import pkgutil
+import importlib.util
 
 import pytest
 import random_structures
 
-NUMPY_INSTALLED = pkgutil.find_loader("numpy") is not None
+NUMPY_INSTALLED = importlib.util.find_spec("numpy") is not None
 
 
 @pytest.mark.parametrize(
