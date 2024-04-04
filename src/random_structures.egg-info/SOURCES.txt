@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/random_structures/__init__.py
+src/random_structures/__main__.py
+src/random_structures/generating_functions.py
+src/random_structures.egg-info/PKG-INFO
+src/random_structures.egg-info/SOURCES.txt
+src/random_structures.egg-info/dependency_links.txt
+src/random_structures.egg-info/top_level.txt
+tests/test_numbers.py
+tests/test_records.py
+tests/test_values.py

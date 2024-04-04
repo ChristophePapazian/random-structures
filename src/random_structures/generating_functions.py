@@ -254,7 +254,7 @@ def generate_boolean(probability: float = 50.0) -> bool:
 def generate_string(
     min_length: int = 1,
     max_length: int = 16,
-    alphabet="letters_",
+    alphabet="ascii_letters_",
     fixed_alphabet=None,
     encoding=None,
 ) -> str:
@@ -289,7 +289,7 @@ def generate_string_from_regex(regex: str):
     try:
         import rstr
 
-        return asciify(rstr.xeger(regex))
+        return rstr.xeger(regex)
     except Exception as e:
         logger.error(exc_info=e)
         return None
