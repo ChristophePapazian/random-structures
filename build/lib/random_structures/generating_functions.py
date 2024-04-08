@@ -5,7 +5,6 @@ import random
 import string
 from logging import getLogger
 from typing import Any
-import re._parser
 
 import pydantic
 
@@ -29,138 +28,6 @@ _ALPHABETS = {
     ]
 }
 _ALPHABETS["ascii_letters_"] = _ALPHABETS["ascii_letters"] + "_"
-
-
-_CATEGORIES = {
-    cat: [chr(i) for i in range(128) if re.fullmatch("\\" + c, chr(i))]
-    for c in "dDsSwW"
-    for _, [(_, cat)] in re._parser.parse("\\" + c)
-}
-
-_CATEGORIES["."] = [chr(i) for i in range(128) if re.fullmatch(".", chr(i))]
-
-
-def word_from_regex(regex: str, min_length=0) -> str:
-    from re._parser import parse
-    import re._constants as C
-
-    groups = {}
-
-    def word_from_ast(ast) -> str:
-        stack = list(ast[::-1])
-        set_start_bounday = False
-
-        def rev_append(lst):
-            for e in reversed(lst):
-                stack.append(e)
-
-        res = []
-        while stack:
-            match stack.pop():
-                case (C.LITERAL, code):
-                    res.append(chr(code))
-                case (C.ANY, _):
-                    res.append(random.choice(_CATEGORIES["."]))
-                case (C.BRANCH, (_, alternatives)):
-                    rev_append(random.choice(alternatives))
-                case (
-                    (C.MAX_REPEAT, (min_, max_, subpattern))
-                    | (C.MIN_REPEAT, (min_, max_, subpattern))
-                ):
-                    if max_ <= 0 or (min_ <= 0 and random.random() < 0.5):
-                        continue
-                    stack.append((C.MAX_REPEAT, (min_ - 1, max_ - 1, subpattern)))
-                    rev_append(subpattern)
-                case (C.SUBPATTERN, (group, _, _, subpattern)):
-                    if group is None:
-                        rev_append(subpattern)
-                    else:
-                        word = word_from_ast(subpattern)
-                        groups[group] = word
-                        res.append(word)
-                case (C.GROUPREF, group):
-                    if group in groups:
-                        res.append(groups[group])
-                case (C.IN, patterns):
-                    if patterns[0] == (C.NEGATE, None):
-
-                        def not_in(i, p):
-                            match p:
-                                case (C.LITERAL, code):
-                                    return i != code
-                                case (C.RANGE, (start, end)):
-                                    return i < start or i > end
-                                case (C.CATEGORY, cat):
-                                    return chr(i) not in _CATEGORIES[cat]
-                                case unknown:
-                                    raise ValueError(f"unknown element {unknown}")
-
-                        choices = [
-                            chr(i)
-                            for i in range(128)
-                            if all(not_in(i, p) for p in patterns[1:])
-                        ]
-                        if choices:
-                            res.append(random.choice(choices))
-                    else:
-                        p = random.choice(patterns)
-                        match p:
-                            case (C.LITERAL, code):
-                                res.append(chr(code))
-                            case (C.RANGE, (start, end)):
-                                res.append(chr(random.randint(start, end)))
-                            case (C.CATEGORY, cat):
-                                if cat in _CATEGORIES:
-                                    res.append(random.choice(_CATEGORIES[cat]))
-                            case unknown:
-                                raise ValueError(f"unknown element {unknown}")
-                case (C.NOT_LITERAL, code):
-                    while (i := random.randint(0, 127)) == code:
-                        pass
-                    res.append(chr(i))
-                case (C.AT, position):
-                    match position:
-                        case C.AT_BOUNDARY:
-                            if res:
-                                if res[-1][-1] in _CATEGORIES[C.CATEGORY_WORD]:
-                                    if stack:
-                                        res.append(
-                                            random.choice(
-                                                _CATEGORIES[C.CATEGORY_NOT_WORD]
-                                            )
-                                        )
-                                else:
-                                    res.append(
-                                        random.choice(_CATEGORIES[C.CATEGORY_WORD])
-                                    )
-                            else:
-                                set_start_bounday = True
-                        case C.AT_BEGINNING:
-                            res.clear()
-                        case C.AT_END:
-                            if stack:
-                                print("CLEARING")
-                            stack.clear()
-                        case _:
-                            pass
-                            # raise ValueError(f"unknown position {position}")
-
-                    # ignore those indications for now
-                    pass
-                case unknown:
-                    pass
-                    # raise ValueError(f"unknown element {unknown}")
-        word = "".join(res)
-        if set_start_bounday:
-            if not word or word[0] not in _CATEGORIES[C.CATEGORY_WORD]:
-                word = random.choice(_CATEGORIES[C.CATEGORY_WORD]) + word
-        return word
-
-    for _ in range(200):
-        result = word_from_ast(parse(regex))
-        if len(result) >= min_length and re.search(regex, result):
-            return result
-    return result
 
 
 class State(enum.Enum):
@@ -387,7 +254,7 @@ def generate_boolean(probability: float = 50.0) -> bool:
 def generate_string(
     min_length: int = 1,
     max_length: int = 16,
-    alphabet="ascii_letters_",
+    alphabet="letters_",
     fixed_alphabet=None,
     encoding=None,
 ) -> str:
@@ -418,9 +285,11 @@ def asciify(s: str):
 
 
 @register_simple_function
-def generate_string_from_regex(regex: str, min_length=0):
+def generate_string_from_regex(regex: str):
     try:
-        return word_from_regex(regex, min_length)
+        import rstr
+
+        return asciify(rstr.xeger(regex))
     except Exception as e:
         logger.error(exc_info=e)
         return None
