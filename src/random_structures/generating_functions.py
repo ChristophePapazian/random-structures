@@ -156,10 +156,14 @@ def word_from_regex(regex: str, min_length=0) -> str:
                 word = random.choice(_CATEGORIES[C.CATEGORY_WORD]) + word
         return word
 
-    for _ in range(200):
-        result = word_from_ast(parse(regex))
-        if len(result) >= min_length and re.search(regex, result):
-            return result
+    try:
+        for _ in range(200):
+            result = word_from_ast(parse(regex))
+            if len(result) >= min_length and re.search(regex, result):
+                return result
+    except Exception as e:
+        logger.error(f"problem with regex {regex}", exc_info=e)
+        return ""
     return result
 
 
@@ -418,9 +422,9 @@ def asciify(s: str):
 
 
 @register_simple_function
-def generate_string_from_regex(regex: str, min_length=0):
+def generate_string_from_regex(regex: str, min_length: int | str = 0):
     try:
-        return word_from_regex(regex, min_length)
+        return word_from_regex(regex, int(min_length))
     except Exception as e:
         logger.error(exc_info=e)
         return None
