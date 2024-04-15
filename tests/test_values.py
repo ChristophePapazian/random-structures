@@ -69,3 +69,46 @@ def test_string_regex(regex, expected):
             assert all(expected(res) for res in all_res), [
                 c for c in all_res if not expected(c)
             ]
+
+
+g_base = random_structures.Structure_Generator({})
+
+
+@pytest.mark.parametrize(
+    ("type_name", "method_name", "callback"),
+    [(t, m, c) for (t, m), c in g_base.CALLBACKS.items()],
+)
+def test_callbacks(type_name, method_name, callback):
+    parameters = {
+        ("min_val", int): 0,
+        ("min_length", int): 2,
+        ("max_val", int): 10,
+        ("max_length", int): 32,
+        ("distribution", str): "uniform",
+        ("probability", float): 0.5,
+        ("regex", str): "ab|cd",
+    }
+    parameters = {
+        name: parameters[(name, type)]
+        for name, type in getattr(callback, "_inner_arguments", {}).items()
+        if name != "return"
+    }
+    specif = {"type": type_name}
+    if method_name is not None:
+        specif["method"] = method_name
+    if parameters:
+        specif["parameters"] = parameters
+    if "distribution" in parameters:
+        specif["parameters"] = ["uniform", 0, 10]
+    if method_name == "choice":
+        specif["parameters"] = ["a", "b", "c"]
+    elif type_name in ("fixed", "constant"):
+        specif["value"] = "test"
+    elif type_name == "choice":
+        specif["options"] = [{"value": {"type": "fixed", "value": "a"}}]
+    if method_name == "regex":
+        specif["parameters"] = ["(ab|cd)+", "5"]
+
+    gen = random_structures.Structure_Generator(specif)
+    res = gen.generate()
+    assert res is not None

@@ -281,10 +281,10 @@ class Structure_Generator:
             case "array":
                 self.parse_specif(specif.get("type_elements"))
             case "record":
-                for key in specif["keys"]:
+                for key in specif.get("keys", []):
                     self.parse_specif(key.get("value"))
             case "choice":
-                for option in specif["options"]:
+                for option in specif.get("options", []):
                     self.parse_specif(option.get("value"))
             case _:
                 pass
@@ -348,6 +348,7 @@ def register_simple_function(fun):
         value.state = State.DONE
         value.value = res
 
+    callback._inner_arguments = fun.__annotations__
     return callback
 
 
@@ -358,11 +359,15 @@ def generate_integer_uniform(min_val: int = 0, max_val: int = 9):
 
 @register_simple_function
 def generate_integer_choice(*choices):
+    if not choices:
+        return None
     return random.choice(choices)
 
 
 @register_simple_function
 def generate_string_choice(*choices):
+    if not choices:
+        return None
     return random.choice(choices)
 
 
@@ -422,9 +427,9 @@ def asciify(s: str):
 
 
 @register_simple_function
-def generate_string_from_regex(regex: str, min_length: int | str = 0):
+def generate_string_from_regex(regex: str, min_length: int = 0):
     try:
-        return word_from_regex(regex, int(min_length))
+        return word_from_regex(regex, min_length)
     except Exception as e:
         logger.error(exc_info=e)
         return None
@@ -502,12 +507,14 @@ def generate_array(sg: Structure_Generator, value: Value):
 
 def generate_choice(sg: Structure_Generator, value: Value):
     r = random.random() * 100.0
-    for option in value.specification["options"]:
-        if r < option["chance"]:
+    options = value.specification.get("options", [])
+    for option in options:
+        chance = option.get("chance", 100.0 / len(options))
+        if r < chance:
             value.specification = option.get("value")
             return
         else:
-            r -= option["chance"]
+            r -= chance
     value.value = None
     value.state = State.DONE
 
